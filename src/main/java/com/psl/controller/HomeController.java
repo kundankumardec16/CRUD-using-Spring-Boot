@@ -28,7 +28,7 @@ public class HomeController {
 	private EmployeeDAO employeeDAO;
 	
 	@Cacheable(value = {"employees"})
-	@GetMapping(value = "/employees")
+	@GetMapping(value = "/read/employees")
 	public List<Employee> getEmployees() {
 		// Deprecated
 		// Future<List<Employee>> future = employeeDAO.getEmployees();
@@ -48,7 +48,7 @@ public class HomeController {
 	}
 	
 	@Cacheable(value = "employee", key = "#id")
-	@GetMapping(value = "/employee/{id}")
+	@GetMapping(value = "/read/employee/{id}")
 	public Employee getEmployeeById(@PathVariable long id) {
 		return employeeDAO.getEmployeeById(id);
 	}
@@ -61,7 +61,7 @@ public class HomeController {
 			@CacheEvict(value = "employees", allEntries = true)
 		}
 	)
-	@PostMapping(value = "employee")
+	@PostMapping(value = "/create/employee")
 	public Employee addEmployee(@RequestBody Employee employee) {
 		return employeeDAO.addEmployee(employee);
 	}
@@ -75,7 +75,7 @@ public class HomeController {
 			@CachePut(cacheNames = {"employee"}, key = "#id")
 		}
 	)
-	@PutMapping(value = "employee/{id}")
+	@PutMapping(value = "/update/employee/{id}")
 	public Employee editEmployeeById(@PathVariable long id, @RequestBody Employee employee) {
 		return employeeDAO.editEmployeeById(id, employee);
 	}
@@ -86,7 +86,7 @@ public class HomeController {
 			@CacheEvict(value = "employees", allEntries = true)
 		}
 	)
-	@DeleteMapping(value = "/employee/{id}")
+	@DeleteMapping(value = "/delete/employee/{id}")
 	public Employee deleteEmployeeById(@PathVariable long id) {
 		return employeeDAO.deleteEmployeeById(id);
 	}

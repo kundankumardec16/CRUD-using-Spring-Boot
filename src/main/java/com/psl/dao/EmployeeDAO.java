@@ -15,86 +15,10 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Repository;
 
 import com.psl.employee.Employee;
+import com.psl.pages.PageOutput;
 
 @Repository
 public class EmployeeDAO {
-	
-//	private List<Employee> employees;
-//
-//	public EmployeeDAO() {
-//		super();
-//		this.employees = new ArrayList<Employee>();
-//		
-//		employees.add(new Employee(1L, "ABC", "Software Engineer I", "Data BFSI", 35000L));
-//		employees.add(new Employee(2L, "DEF", "Software Engineer II", "Data BFSI", 70000L));
-//		employees.add(new Employee(3L, "GHI", "Software Engineer II", "Data BFSI", 70000L));
-//		employees.add(new Employee(4L, "JKL", "Architect", "Data BFSI", 90000L));
-//		employees.add(new Employee(5L, "MNO", "Manager", "Data BFSI", 75000L));
-//	}
-//	
-//	public List<Employee> getEmployees() {
-//		return employees;
-//	}
-//	
-//	public Employee getEmployeeById(long id) {
-//		for (Employee emp : employees) {
-//			if (emp.getEmpId() == id) {
-//				return emp;
-//			}
-//		}
-//		
-//		return null;
-//	}
-//	
-//	public Employee addEmployee(Employee employee) {
-//		employees.add(employee);
-//		return employee;
-//	}
-//	
-//	public Employee editEmployeeById(long id, Employee employee) {
-//		for (Employee emp : employees) {
-//			if (emp.getEmpId() == id) {
-//				if (employee.getEmpName() != null) {
-//					emp.setEmpName(employee.getEmpName());
-//				}
-//				
-//				if (employee.getDesignation() != null) {
-//					emp.setDesignation(employee.getDesignation());
-//				}
-//				
-//				if (employee.getDepartment() != null) {
-//					emp.setDepartment(employee.getDepartment());
-//				}
-//				
-//				if (employee.getSalary() != null) {
-//					emp.setSalary(employee.getSalary());
-//				}
-//				
-//				return emp;
-//			}
-//		}
-//		
-//		return null;
-//	}
-//	
-//	public Employee deleteEmployeeById(long id) {
-//		int idx = -1;
-//		Employee emp = null;
-//		
-//		for (int i = 0 ; i < employees.size() ; i++) {
-//			if (employees.get(i).getEmpId() == id) {
-//				idx = i;
-//				emp = employees.get(i);
-//				break;
-//			}
-//		}
-//		
-//		if (idx != -1) {
-//			employees.remove(idx);
-//		}
-//		
-//		return emp;
-//	}
 	
 	@Autowired
 	private EmployeeRepository employeeRepository;
@@ -102,14 +26,15 @@ public class EmployeeDAO {
 	// https://www.geeksforgeeks.org/spring-boot-h2-database/
 	@Async
 	public CompletableFuture<List<Employee>> getEmployees() {
-		return CompletableFuture.completedFuture(employeeRepository.findAll());
+		return CompletableFuture.completedFuture(employeeRepository.getAllEmployees());
 	}
+	
 //	public Future<List<Employee>> getEmployees() {
 //		return  new AsyncResult<List<Employee>>(employeeRepository.findAll());
 //	}
 	
 	public Employee getEmployeeById(long id) {
-		return employeeRepository.findById(id).get();
+		return employeeRepository.getEmployeeById(id);
 	}
 	
 	public Employee addEmployee(Employee employee) {
@@ -123,16 +48,16 @@ public class EmployeeDAO {
 			emp.setEmpName(employee.getEmpName());
 		}
 		
-		if (employee.getDesignation() != null) {
-			emp.setDesignation(employee.getDesignation());
+		if (employee.getEmpDesignation() != null) {
+			emp.setEmpDesignation(employee.getEmpDesignation());
 		}
 		
-		if (employee.getDepartment() != null) {
-			emp.setDepartment(employee.getDepartment());
+		if (employee.getEmpDepartment() != null) {
+			emp.setEmpDepartment(employee.getEmpDepartment());
 		}
 		
-		if (employee.getSalary() != null) {
-			emp.setSalary(employee.getSalary());
+		if (employee.getEmpSalary() != null) {
+			emp.setEmpSalary(employee.getEmpSalary());
 		}
 		
 		return employeeRepository.save(emp);
@@ -140,16 +65,31 @@ public class EmployeeDAO {
 	
 	public Employee deleteEmployeeById(long id) {
 		Employee employee = this.getEmployeeById(id);
-		employeeRepository.deleteById(id);
+		employeeRepository.deleteEmployeeById(id);
 		return employee;
 	}
 	
 	// https://www.geeksforgeeks.org/spring-rest-pagination/
-	public List<Employee> getPage(int pageNumber) {
-		Pageable paging = PageRequest.of(pageNumber, 2, Sort.by("empId").ascending());
+	public PageOutput gotoPage(int pageNumber, int pageSize) {
+		Pageable paging = PageRequest.of(pageNumber, pageSize, Sort.by("empId").ascending());
         Page<Employee> page = employeeRepository.findAll(paging);
+        
+        PageOutput pageOutput = new PageOutput();
+        
+        if (page.hasPrevious())
+        	pageOutput.setPrevPage(page.previousPageable());
+        if (page.hasNext())
+        	pageOutput.setNextPage(page.nextPageable());
+        
+        pageOutput.setPageData(page.getContent());
+        
+        pageOutput.setPageNumber(pageNumber);
+        pageOutput.setPageSize(pageSize);
+        
+        pageOutput.setTotalPages(page.getTotalPages());
+        pageOutput.setTotalElements(page.getTotalElements());
  
         // Retrieve the items
-        return page.getContent();
+        return pageOutput;
 	}
 }

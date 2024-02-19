@@ -1,68 +1,106 @@
 package com.psl.employee;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.validation.constraints.Email;
 
 @Entity
 public class Employee {
 	
 	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long empId;
+	
+	@Column
 	private String empName;
-	private String designation;
-	private String department;
-	private Long salary;
+	
+	@Email
+	@Column(unique = true)
+	private String empEmail;
+	
+	@Column
+	private String empDob;
+	
+	@Column
+	private String empDesignation;
+	
+	@Column
+	private String empDepartment;
+	
+	@Column
+	private Long empSalary;
+	
+	@Column
+	private boolean isActive = true;
 	
 	public Employee() {
 		super();
 	}
 
-	public Employee(Long empId, String empName, String designation, String department, Long salary) {
-		super();
-		this.empId = empId;
-		this.empName = empName;
-		this.designation = designation;
-		this.department = department;
-		this.salary = salary;
-	}
-
 	public Long getEmpId() {
 		return empId;
 	}
-	
+
 	public void setEmpId(Long empId) {
 		this.empId = empId;
 	}
-	
+
 	public String getEmpName() {
 		return empName;
 	}
-	
+
 	public void setEmpName(String empName) {
 		this.empName = empName;
 	}
-	
-	public String getDesignation() {
-		return designation;
+
+	public String getEmpEmail() {
+		return empEmail;
 	}
-	
-	public void setDesignation(String designation) {
-		this.designation = designation;
+
+	public void setEmpEmail(String empEmail) {
+		this.empEmail = empEmail;
 	}
-	
-	public String getDepartment() {
-		return department;
+
+	public String getEmpDob() {
+		return empDob;
 	}
-	
-	public void setDepartment(String department) {
-		this.department = department;
+
+	public void setEmpDob(String empDob) {
+		this.empDob = empDob;
 	}
-	
-	public Long getSalary() {
-		return salary;
+
+	public String getEmpDesignation() {
+		return empDesignation;
 	}
-	
-	public void setSalary(Long salary) {
-		this.salary = salary;
+
+	public void setEmpDesignation(String empDesignation) {
+		this.empDesignation = empDesignation;
+	}
+
+	public String getEmpDepartment() {
+		return empDepartment;
+	}
+
+	public void setEmpDepartment(String empDepartment) {
+		this.empDepartment = empDepartment;
+	}
+
+	public Long getEmpSalary() {
+		return empSalary;
+	}
+
+	public void setEmpSalary(Long empSalary) {
+		this.empSalary = empSalary;
+	}
+
+	public boolean isActive() {
+		return isActive;
+	}
+
+	public void setActive(boolean isActive) {
+		this.isActive = isActive;
 	}
 }
